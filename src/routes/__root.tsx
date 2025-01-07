@@ -4,9 +4,11 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
 import { RouterContext } from "@/lib/router";
+import { GlobalError } from "@/pages/global-error.page";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
+  errorComponent: ({ error }) => <GlobalError message={error.message} />,
 });
 
 function RootComponent() {

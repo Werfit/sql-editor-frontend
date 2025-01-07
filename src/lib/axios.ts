@@ -3,7 +3,12 @@ import { logger } from "@/service/logger/logger.service";
 import { get, remove, set } from "@/service/storage/storage.service";
 import { environment } from "@/shared/configuration/environment";
 import { AuthenticationStorage } from "@/shared/constants/storage.constants";
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HttpStatusCode,
+} from "axios";
 
 const instance = axios.create({
   baseURL: environment.backendURI,
@@ -32,7 +37,10 @@ instance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalConfig = error.config!;
 
-    if (!error.response || error.response.status !== 403) {
+    if (
+      !error.response ||
+      error.response.status !== HttpStatusCode.Unauthorized
+    ) {
       return Promise.reject(error);
     }
 
@@ -52,7 +60,13 @@ instance.interceptors.response.use(
 
     try {
       if (!refreshToken) {
-        throw new Error("Unauthorized");
+        throw new AxiosError(
+          "Unauthorized",
+          HttpStatusCode.Forbidden.toString(),
+          undefined,
+          error.request,
+          error.response
+        );
       }
 
       const response = await axios.post<

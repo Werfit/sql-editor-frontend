@@ -17,7 +17,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCreateWorkspaceMutation } from "@/hooks/queries/workspace.hooks";
+import { useCreateWorkspaceMutation } from "@/hooks/queries/use-workspace-queries.hook";
 import {
   CreateWorkspaceSchema,
   createWorkspaceSchema,
@@ -35,11 +35,12 @@ const CreateDashboardModal = () => {
     },
   });
 
-  const { mutate: createWorkspaceMutation } = useCreateWorkspaceMutation({
-    onSuccess: () => {
-      setIsOpen(false);
-    },
-  });
+  const { mutate: createWorkspaceMutation, isPending } =
+    useCreateWorkspaceMutation({
+      onSuccess: () => {
+        setIsOpen(false);
+      },
+    });
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -77,7 +78,9 @@ const CreateDashboardModal = () => {
             />
           </Form>
           <DialogFooter>
-            <Button type="submit">Confirm</Button>
+            <Button type="submit" disabled={isPending}>
+              Confirm
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,15 +1,21 @@
 import {
+  queryOptions,
   useMutation,
   useMutationState,
   useQuery,
   useQueryClient,
+  useSuspenseQuery,
 } from "@tanstack/react-query";
 import { useToast } from "../use-toast";
 import {
   createWorkspace,
   deleteWorkspace,
+  getWorkspace,
   listWorkspaces,
+  runWorkspace,
 } from "@/service/workspace/workspace.service";
+import { WorkspaceQuery } from "@/shared/constants/invalidation.constants";
+import { useWorkspace } from "@/pages/workspace/context/workspace.context";
 
 type MutationProps = {
   onSuccess?: () => void;
@@ -18,7 +24,7 @@ type MutationProps = {
 export const useListWorkspacesMutation = () => {
   return useQuery({
     queryFn: listWorkspaces,
-    queryKey: ["listWorkspaces"],
+    queryKey: [WorkspaceQuery.LIST],
     retry: false,
   });
 };
@@ -29,7 +35,7 @@ export const useCreateWorkspaceMutation = (params: MutationProps) => {
 
   return useMutation({
     mutationFn: createWorkspace,
-    mutationKey: ["createWorkspace"],
+    mutationKey: [WorkspaceQuery.LIST],
     onSuccess: () => {
       if (typeof params === "object") {
         params.onSuccess?.();
@@ -43,7 +49,7 @@ export const useCreateWorkspaceMutation = (params: MutationProps) => {
       });
     },
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: ["listWorkspaces"] }),
+      queryClient.invalidateQueries({ queryKey: [WorkspaceQuery.LIST] }),
   });
 };
 
@@ -52,7 +58,7 @@ export const useCreateWorkspaceMutationState = () => {
     name: string;
     submittedAt: Date;
   }>({
-    filters: { mutationKey: ["createWorkspace"], status: "pending" },
+    filters: { mutationKey: [WorkspaceQuery.CREATE], status: "pending" },
     select: (mutation) =>
       ({
         name: mutation.state.variables,
@@ -70,7 +76,7 @@ export const useDeleteWorkspaceMutation = (params: MutationProps) => {
 
   return useMutation({
     mutationFn: deleteWorkspace,
-    mutationKey: ["deleteWorkspace"],
+    mutationKey: [WorkspaceQuery.DELETE],
     onSuccess: () => {
       if (typeof params === "object") {
         params.onSuccess?.();
@@ -84,6 +90,32 @@ export const useDeleteWorkspaceMutation = (params: MutationProps) => {
       });
     },
     onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: ["listWorkspaces"] }),
+      queryClient.invalidateQueries({ queryKey: [WorkspaceQuery.LIST] }),
   });
+};
+
+export const useRunWorkspace = () => {
+  const [{ contentRef }, { setError, setData }] = useWorkspace();
+
+  return useMutation({
+    mutationFn: (workspaceId: string) =>
+      runWorkspace({
+        id: workspaceId,
+        code: contentRef.current?.content ?? "",
+      }),
+    mutationKey: [WorkspaceQuery.RUN],
+    onSuccess: (data) => setData(data),
+    onError: (error) => setError(error.message),
+  });
+};
+
+export const getWorkspaceOptions = (id: string) =>
+  queryOptions({
+    queryKey: [WorkspaceQuery.GET],
+    queryFn: () => getWorkspace(id),
+    retry: false,
+  });
+
+export const useSuspenseGetWorkspace = (id: string) => {
+  return useSuspenseQuery(getWorkspaceOptions(id));
 };

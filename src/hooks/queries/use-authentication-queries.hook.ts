@@ -24,6 +24,7 @@ import { remove, set } from "@/service/storage/storage.service";
 import { useRouter } from "@tanstack/react-router";
 import { useToast } from "@/hooks/use-toast";
 import { router } from "@/lib/router";
+import { AuthenticationQuery } from "@/shared/constants/invalidation.constants";
 
 export const useLoginMutation = () => {
   const queryClient = useQueryClient();
@@ -33,17 +34,17 @@ export const useLoginMutation = () => {
 
   return useMutation<AuthenticationResponse, Error, LoginSchema>({
     mutationFn: ({ email, password }) => login(email, password),
+    mutationKey: [AuthenticationQuery.LOGIN],
     onSuccess: async (data) => {
       set("__authentication_at", data.accessToken);
       set("__authentication_rt", data.refreshToken);
 
       await queryClient.invalidateQueries({
-        queryKey: ["user"],
+        queryKey: [AuthenticationQuery.USER],
       });
 
-      await router.invalidate();
       await router.navigate({
-        to: "/",
+        to: "/dashboard",
       });
     },
     onError: (error) => {
@@ -63,17 +64,17 @@ export const useSignUpMutation = () => {
 
   return useMutation<AuthenticationResponse, Error, SignUpSchema>({
     mutationFn: ({ email, password }) => signUp(email, password),
+    mutationKey: [AuthenticationQuery.SIGN_UP],
     onSuccess: async (data) => {
       set("__authentication_at", data.accessToken);
       set("__authentication_rt", data.refreshToken);
 
       await queryClient.invalidateQueries({
-        queryKey: ["user"],
+        queryKey: [AuthenticationQuery.USER],
       });
 
-      await router.invalidate();
       await router.navigate({
-        to: "/",
+        to: "/dashboard",
       });
     },
     onError: (error) => {
@@ -92,6 +93,7 @@ export const useLogoutMutation = () => {
 
   return useMutation<void, Error, void>({
     mutationFn: logout,
+    mutationKey: [AuthenticationQuery.LOGOUT],
     onSuccess: async () => {
       remove("__authentication_at");
       remove("__authentication_rt");
@@ -109,7 +111,7 @@ export const useLogoutMutation = () => {
 
 const authQueryOptions = () =>
   queryOptions({
-    queryKey: ["user"],
+    queryKey: [AuthenticationQuery.USER],
     queryFn: getUser,
   });
 
@@ -125,20 +127,28 @@ export type UseAuth = {
   authenticate: () => ReturnType<typeof getUser>;
 };
 
-export const useAuth = (): UseAuth => {
+export const useAuth = (
+  { skipInvalidation }: { skipInvalidation: boolean } = {
+    skipInvalidation: true,
+  }
+): UseAuth => {
   const queryClient = useQueryClient();
   const { data, isPending, error } = useQuery(authQueryOptions());
 
   useEffect(() => {
-    router.invalidate();
-  }, [data]);
+    // constant invalidation on user update might cause infinite page reload sometimes (mostly preload behavior related, e.g. workspace preload and error navigation that uses useAuth)
+    // it's enough to enable invalidation on the level of the application
+    if (!skipInvalidation) {
+      router.invalidate();
+    }
+  }, [data, skipInvalidation]);
 
   useEffect(() => {
     if (error === null) {
       return;
     }
 
-    queryClient.setQueryData(["user"], null);
+    queryClient.setQueryData([AuthenticationQuery.USER], null);
   }, [error, queryClient]);
 
   const authenticate = useCallback(() => {

@@ -1,6 +1,6 @@
-import { UserMenu } from "./components/user.component";
+import { UserMenu } from "./components/user-menu.component";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/queries/authentication.hooks";
+import { useAuth } from "@/hooks/queries/use-authentication-queries.hook";
 import { Link } from "@tanstack/react-router";
 
 type NavigationProps = {
@@ -11,7 +11,7 @@ const Navigation: React.FC<NavigationProps> = ({ toolbar: toolbar }) => {
   const { user } = useAuth();
 
   return (
-    <div className="flex w-full items-center justify-end gap-2 p-6">
+    <div className="flex items-center justify-end gap-2 p-6">
       {toolbar}
 
       {user && <UserMenu />}

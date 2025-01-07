@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/icon/icon.component";
 import { useState } from "react";
-import { useLoginMutation } from "@/hooks/queries/authentication.hooks";
+import { useLoginMutation } from "@/hooks/queries/use-authentication-queries.hook";
 
 const LoginForm = () => {
   const form = useForm<LoginSchema>({

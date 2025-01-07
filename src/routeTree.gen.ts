@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AuthenticationImport } from './routes/authentication'
 import { Route as IndexImport } from './routes/index'
+import { Route as WorkspaceIdImport } from './routes/workspace.$id'
 
 // Create/Update Routes
 
@@ -32,6 +33,12 @@ const AuthenticationRoute = AuthenticationImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const WorkspaceIdRoute = WorkspaceIdImport.update({
+  id: '/workspace/$id',
+  path: '/workspace/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -60,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
+    '/workspace/$id': {
+      id: '/workspace/$id'
+      path: '/workspace/$id'
+      fullPath: '/workspace/$id'
+      preLoaderRoute: typeof WorkspaceIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -69,12 +83,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/authentication': typeof AuthenticationRoute
   '/dashboard': typeof DashboardRoute
+  '/workspace/$id': typeof WorkspaceIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/authentication': typeof AuthenticationRoute
   '/dashboard': typeof DashboardRoute
+  '/workspace/$id': typeof WorkspaceIdRoute
 }
 
 export interface FileRoutesById {
@@ -82,14 +98,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/authentication': typeof AuthenticationRoute
   '/dashboard': typeof DashboardRoute
+  '/workspace/$id': typeof WorkspaceIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/authentication' | '/dashboard'
+  fullPaths: '/' | '/authentication' | '/dashboard' | '/workspace/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/authentication' | '/dashboard'
-  id: '__root__' | '/' | '/authentication' | '/dashboard'
+  to: '/' | '/authentication' | '/dashboard' | '/workspace/$id'
+  id: '__root__' | '/' | '/authentication' | '/dashboard' | '/workspace/$id'
   fileRoutesById: FileRoutesById
 }
 
@@ -97,12 +114,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticationRoute: typeof AuthenticationRoute
   DashboardRoute: typeof DashboardRoute
+  WorkspaceIdRoute: typeof WorkspaceIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticationRoute: AuthenticationRoute,
   DashboardRoute: DashboardRoute,
+  WorkspaceIdRoute: WorkspaceIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +136,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/authentication",
-        "/dashboard"
+        "/dashboard",
+        "/workspace/$id"
       ]
     },
     "/": {
@@ -128,6 +148,9 @@ export const routeTree = rootRoute
     },
     "/dashboard": {
       "filePath": "dashboard.tsx"
+    },
+    "/workspace/$id": {
+      "filePath": "workspace.$id.tsx"
     }
   }
 }

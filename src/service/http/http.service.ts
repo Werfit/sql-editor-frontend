@@ -27,10 +27,13 @@ class HTTPRequest {
 
       const message = responseError?.message ?? error.message;
 
+      console.log(error);
       return {
         success: false,
         data: {
+          statusCode: responseError.statusCode,
           message,
+          error: responseError.error,
         },
       };
     }
@@ -56,7 +59,9 @@ class HTTPRequest {
       return {
         success: false,
         data: {
+          statusCode: responseError.statusCode,
           message,
+          error: responseError.error,
         },
       };
     }
@@ -79,7 +84,9 @@ class HTTPRequest {
       return {
         success: false,
         data: {
+          statusCode: responseError.statusCode,
           message,
+          error: responseError.error,
         },
       };
     }

@@ -4,13 +4,13 @@ import "./assets/styles/app.css";
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "@tanstack/react-router";
-import { useAuth } from "./hooks/queries/authentication.hooks";
+import { useAuth } from "./hooks/queries/use-authentication-queries.hook";
 import { query } from "./lib/query";
 import { router } from "./lib/router";
 
 // eslint-disable-next-line react-refresh/only-export-components
 const App = () => {
-  const authentication = useAuth();
+  const authentication = useAuth({ skipInvalidation: false });
 
   return <RouterProvider context={{ authentication }} router={router} />;
 };

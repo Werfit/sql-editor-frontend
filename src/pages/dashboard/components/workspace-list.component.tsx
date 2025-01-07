@@ -2,7 +2,7 @@ import { WorkspaceCard } from "@/components/workspace/workspace-card.component";
 import {
   useCreateWorkspaceMutationState,
   useListWorkspacesMutation,
-} from "@/hooks/queries/workspace.hooks";
+} from "@/hooks/queries/use-workspace-queries.hook";
 import { cn } from "@/shared/utils/cn.util";
 
 type WorkspaceListProps = {
@@ -29,7 +29,7 @@ const WorkspaceList: React.FC<WorkspaceListProps> = ({ className }) => {
     </div>;
   }
 
-  if (!data) {
+  if (!data || data.length === 0) {
     return (
       <div className={cn("text-center", className)}>
         <i className="text-muted-foreground">

@@ -7,6 +7,7 @@ import {
   RiEyeOffLine,
   RiMoreLine,
   RiPlayLine,
+  RiPlayList2Line,
   RiUser3Line,
 } from "@remixicon/react";
 
@@ -20,6 +21,7 @@ const IconTypes = {
   EYE_CLOSED: "eye-closed",
   ADD: "add",
   MORE: "more",
+  PLAY_LIST: "play-list",
 } as const;
 
 type IconProps = {
@@ -55,6 +57,9 @@ const Icon: React.FC<IconProps> = ({ type, className }) => {
     }
     case IconTypes.MORE: {
       return <RiMoreLine />;
+    }
+    case IconTypes.PLAY_LIST: {
+      return <RiPlayList2Line />;
     }
     default: {
       return null;

@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useLogoutMutation } from "@/hooks/queries/authentication.hooks";
+import { useLogoutMutation } from "@/hooks/queries/use-authentication-queries.hook";
 import { Link } from "@tanstack/react-router";
 
 const UserMenu = () => {
@@ -21,7 +21,7 @@ const UserMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link to="/dashboard">Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

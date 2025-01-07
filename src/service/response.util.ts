@@ -12,10 +12,4 @@ export type HttpResponse<S, E = HttpResponseError> =
   | {
       success: false;
       data: E;
-    }
-  | {
-      success: false;
-      data: {
-        message: string;
-      };
     };

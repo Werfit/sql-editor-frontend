@@ -1,4 +1,4 @@
-import { AuthStatus } from "@/hooks/queries/authentication.hooks";
+import { AuthStatus } from "@/hooks/queries/use-authentication-queries.hook";
 import { Dashboard } from "@/pages/dashboard/dasboard.page";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
